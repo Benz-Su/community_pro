@@ -12,6 +12,8 @@ import pickle.community_pro.dto.AccessTokenDTO;
 import pickle.community_pro.dto.GithubUser;
 import pickle.community_pro.provider.GithubProvider;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @ClassName AuthorizeController
  * @Description
@@ -32,7 +34,8 @@ public class AuthorizeController{
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code")String code,
-                                 @RequestParam(name="state")String state){
+                           @RequestParam(name="state")String state,
+                           HttpServletRequest request){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(ClientSecret);
@@ -42,7 +45,11 @@ public class AuthorizeController{
 
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser user = githubProvider.getUser(accessToken);
-
-        return "index";
+        if (user != null) {
+            request.getSession().setAttribute("user",user);
+            return "redirect:/";
+        }else {
+            return "redirect:/";
+        }
     }
 }

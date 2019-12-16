@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @ClassName AccessTokenDTO
- * @Description
+ * @Description 类和类之间网络传输数据
  * @Author 黑奔驰
  * @Date 2019/12/8 16:00
  * @Verison 1.0

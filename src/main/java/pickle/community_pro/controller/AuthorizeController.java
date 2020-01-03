@@ -14,8 +14,8 @@ import pickle.community_pro.mapper.UserMapper;
 import pickle.community_pro.model.User;
 import pickle.community_pro.provider.GithubProvider;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -43,7 +43,7 @@ public class AuthorizeController{
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code")String code,
                            @RequestParam(name="state")String state,
-                           HttpServletRequest request){
+                           HttpServletResponse response){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(ClientSecret);
@@ -53,16 +53,18 @@ public class AuthorizeController{
 
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if (githubUser != null) {
+        if (githubUser != null && githubUser.getId() != null) {
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccount_id(String.valueOf(githubUser.getId()));
             user.setGmt_created(System.currentTimeMillis());
             user.setGmt_modified(user.getGmt_created());
+            user.setBio(githubUser.getBio());
+            user.setAvatar_url(githubUser.getAvatar_url());
             userMapper.insert(user);
-            //登录成功，写入cookie和session
-            request.getSession().setAttribute("user",githubUser);
+            response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else {
             //登录失败，重新登录

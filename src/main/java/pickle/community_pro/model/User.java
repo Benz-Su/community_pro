@@ -20,4 +20,6 @@ public class User{
     private String token;
     private Long gmt_created;
     private Long gmt_modified;
+    private String bio;
+    private String avatar_url;
 }

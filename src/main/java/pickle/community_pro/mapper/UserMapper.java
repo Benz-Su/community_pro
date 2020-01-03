@@ -2,6 +2,8 @@ package pickle.community_pro.mapper;
 
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import pickle.community_pro.model.User;
 
 
@@ -16,7 +18,12 @@ import pickle.community_pro.model.User;
 
 public interface UserMapper{
 
-    @Insert("insert into user (account_id,name,token,gmt_created,gmt_modified) values ('${account_id}','${name}','${token}',${gmt_created},${gmt_modified})")
+    @Insert("insert into user (account_id,name,token,gmt_created,gmt_modified,bio,avatar_url) values (#{account_id},#{name},#{token},#{gmt_created},#{gmt_modified},#{bio},#{avatar_url})")
     void insert(User user);
 
+    @Select("select * from user where token = #{token}")
+    User findByToken(@Param("token") String token);
+
+    @Select("select * from user where id = #{id}")
+    User findById(@Param("id")Integer id);
 }
